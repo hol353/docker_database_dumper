@@ -40,32 +40,34 @@ function check_environment_variables {
         echo "You need to set the PGID environment variable."
         ENV_CORRECTLY_SET=1
     fi
-    if [ "${DUMPER_TYPE}" != "mysql" ] && [ "${DUMPER_TYPE}" != "postgres" ]; then
-        echo "You need to set the DUMPER_TYPE environment variable to 'mysql' or 'postgres'."
+    if [ "${DUMPER_TYPE}" != "mysql" ] && [ "${DUMPER_TYPE}" != "postgres" ] && [ "${DUMPER_TYPE}" != "sqlite" ]; then
+        echo "You need to set the DUMPER_TYPE environment variable to 'mysql' or 'postgres' or 'sqlite'."
         exit 1
     fi
     if [ "${DUMPER_DATABASE}" = "**None**" ] || [ -z "${DUMPER_DATABASE}" ]; then
         echo "You need to set the DUMPER_DATABASE environment variable."
         ENV_CORRECTLY_SET=1
     fi
-    if [ "${DUMPER_HOST}" = "**None**" ] || [ -z "${DUMPER_HOST}" ]; then
-        echo "You need to set the DUMPER_HOST environment variable."
-        ENV_CORRECTLY_SET=1
-    fi
-    if [ -z "${DUMPER_PORT}" ]; then
-        echo "You need to set the DUMPER_PORT environment variable."
-        ENV_CORRECTLY_SET=1
+    if [ "${DUMPER_TYPE}" != "sqlite" ]; then
+        if [ "${DUMPER_HOST}" = "**None**" ] || [ -z "${DUMPER_HOST}" ]; then
+            echo "You need to set the DUMPER_HOST environment variable."
+            ENV_CORRECTLY_SET=1
+        fi
+        if [ -z "${DUMPER_PORT}" ]; then
+            echo "You need to set the DUMPER_PORT environment variable."
+            ENV_CORRECTLY_SET=1
+        fi
+        if [ "${DUMPER_USER}" = "**None**" ] || [ -z "${DUMPER_USER}" ]; then
+            echo "You need to set the DUMPER_USER environment variable."
+            ENV_CORRECTLY_SET=1
+        fi
+        if [ "${DUMPER_PASSWORD}" = "**None**" ] || [ -z "${DUMPER_PASSWORD}" ]; then
+            echo "You need to set the DUMPER_PASSWORD environment variable."
+            ENV_CORRECTLY_SET=1
+        fi
     fi
     if [ -z "${DUMPER_KEEP}" ]; then
         echo "You need to set the DUMPER_KEEP environment variable."
-        ENV_CORRECTLY_SET=1
-    fi
-    if [ "${DUMPER_USER}" = "**None**" ] || [ -z "${DUMPER_USER}" ]; then
-        echo "You need to set the DUMPER_USER environment variable."
-        ENV_CORRECTLY_SET=1
-    fi
-    if [ "${DUMPER_PASSWORD}" = "**None**" ] || [ -z "${DUMPER_PASSWORD}" ]; then
-        echo "You need to set the DUMPER_PASSWORD environment variable."
         ENV_CORRECTLY_SET=1
     fi
     if [ "${DUMPER_POSTGRES_CLUSTER}" != "false" ] && [ "${DUMPER_POSTGRES_CLUSTER}" != "true" ]; then
@@ -117,6 +119,10 @@ function create_dump {
             echo "Creating dump of ${POSTGRES_DB} database from ${POSTGRES_HOST}..."
             pg_dump -h "${DUMPER_HOST}" -p "${DUMPER_PORT}" -U "${DUMPER_USER}" --dbname="${DUMPER_DATABASE}" >"${DUMP_FILE}"
         fi
+    fi
+    if [ "${DUMPER_TYPE}" = "sqlite" ]; then
+        echo "Creating dump of ${DUMPER_DATABASE} database..."
+        sqlite3 "/db/${DUMPER_DATABASE}" .dump >"${DUMP_FILE}"
     fi
 
     # Check if the dump file was correctly created

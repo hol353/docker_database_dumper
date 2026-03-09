@@ -26,7 +26,7 @@ VOLUME /dumps
 
 CMD [ "/entrypoint.sh" ]
 
-FROM base as postgres-base
+FROM base AS postgres-base
 ENV DUMPER_TYPE="postgres"
 
 FROM postgres-base AS postgres-16
@@ -44,10 +44,13 @@ RUN apk add --no-cache --update postgresql13-client
 FROM postgres-base AS postgres-12
 RUN apk add --no-cache --update postgresql12-client
 
-FROM base as mariadb
+FROM base AS mariadb
 ENV DUMPER_TYPE="mysql"
 RUN apk add --no-cache --update mariadb-client
 
-FROM base as mysql
+FROM base AS mysql
 ENV DUMPER_TYPE="mysql"
 RUN apk add --no-cache --update mysql-client
+
+FROM base AS sqlite
+RUN apk add --no-cache --update sqlite

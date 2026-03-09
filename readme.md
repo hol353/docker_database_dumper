@@ -1,8 +1,12 @@
+# Fork
+
+This is a fork of https://github.com/paolobasso99/docker_database_dumper to add SQLite support. Thanks to [paolobasso99](https://github.com/paolobasso99) for creating an extensible, lightweight, series of database backup docker images.
+
 # docker_database_dumper
 ![GitHub Repo stars](https://img.shields.io/github/stars/paolobasso99/docker_database_dumper?label=GITHUB%20STARS&style=for-the-badge)
 ![Docker Pulls](https://img.shields.io/docker/pulls/paolobasso/database_dumper?style=for-the-badge)
 
-Periodically dump a MySQL/MariaDB or PostgreSQL database to the local system and keep only a maximum number of dumps with a Docker container. Supports [healthchecks.io](https://healthchecks.io/). 
+Periodically dump a MySQL/MariaDB, PostgreSQL or SQLite database to the local system and keep only a maximum number of dumps with a Docker container. Supports [healthchecks.io](https://healthchecks.io/). 
 
 Links:
 - [Source code on GitHub](https://github.com/paolobasso99/docker_database_dumper)
@@ -11,6 +15,7 @@ Links:
 ### Supported tags
 - `mariadb` for a MariaDB database
 - `mysql` for a MySQL database
+- 'sqlite' for a SQLite database
 - For postgres use the correct version:
   - `postgres-16` for PostgreSQL 16
   - `postgres-15` for PostgreSQL 15
@@ -19,7 +24,7 @@ Links:
   - `postgres-12` for PostgreSQL 12
 
 ## Why
-I wanted a simple container which periodically backup my MySQL and PostgreSQL databases. I wanted to be allerted of failures using [healthchecks.io](https://healthchecks.io/).
+I wanted a simple container which periodically backup my MySQL, PostgreSQL and SQLite databases. I wanted to be allerted of failures using [healthchecks.io](https://healthchecks.io/).
 
 I use this image together with a classic file backup setup which saves all the dumps in an incremental way on a remote server.
 
@@ -77,18 +82,18 @@ networks:
 ```
 
 ### Environment Variables
-| Variable                | Description                                                                                | Default          |
-| ----------------------- | ------------------------------------------------------------------------------------------ | ---------------- |
-| PUID                    | The UserID of the user who will own the dumps.                                             |                  |
-| PGID                    | The GroupID of the user who will own the dumps.                                            |                  |
-| DUMPER_DATABASE         | The name of the database to dump.                                                          |                  |
-| DUMPER_HOST             | Database connection parameter; host to connect to.                                         |                  |
-| DUMPER_PASSWORD         | Database connection parameter; password to connect with.                                   |                  |
-| DUMPER_PORT             | Database connection parameter; port to connect to.                                         | `3306` or `5432` |
-| DUMPER_USER             | Database connection parameter; user to connect with.                                       |                  |
-| DUMPER_SCHEDULE         | [Cron-schedule](https://en.wikipedia.org/wiki/Cron) specifying the interval between dumps. | `0 3 * * *`      |
-| DUMPER_KEEP             | The number of dumps to keep.                                                               | `7`              |
-| DUMPER_HEALTHCHECKS_URL | The url to an [healthchecks.io](https://healthchecks.io/) endpoint.                        |                  |
+| Variable                | Description                                                                                   | Default          |
+| ----------------------- | --------------------------------------------------------------------------------------------- | ---------------- |
+| PUID                    | The UserID of the user who will own the dumps.                                                |                  |
+| PGID                    | The GroupID of the user who will own the dumps.                                               |                  |
+| DUMPER_DATABASE         | The name of the database to dump. For SQLite, this is the filename (no path) to the .db file. |
+| DUMPER_HOST             | Database connection parameter; host to connect to. Not needed for SQLite.                     |                  |
+| DUMPER_PASSWORD         | Database connection parameter; password to connect with. Not needed for SQLite.               |                  |
+| DUMPER_PORT             | Database connection parameter; port to connect to. Not needed for SQLite.                     | `3306` or `5432` |
+| DUMPER_USER             | Database connection parameter; user to connect with. Not needed for SQLite.                   |                  |
+| DUMPER_SCHEDULE         | [Cron-schedule](https://en.wikipedia.org/wiki/Cron) specifying the interval between dumps.    | `0 3 * * *`      |
+| DUMPER_KEEP             | The number of dumps to keep.                                                                  | `7`              |
+| DUMPER_HEALTHCHECKS_URL | The url to an [healthchecks.io](https://healthchecks.io/) endpoint.                           |                  |
 
 ### User / Group Identifiers
 To find the correct values of `PUID` and `PGID` use `id user` as below:
