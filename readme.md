@@ -81,12 +81,35 @@ networks:
     driver: bridge
 ```
 
+### Usage: SQLite
+
+The dump script requires a volume mount for the location of the SQLite DB file. Internally, the dump script assumes it is in /db. Example docker-compose.yml:
+
+```yml
+services:
+  sqlite-backup:
+    image: hol353/database_dumper:sqlite
+    restart: unless-stopped
+    container_name: sqlite-backup
+    volumes:
+      - /path/to/store/dumps:/dumps
+      - /path/of/db/file:/db
+    environment:
+      - PGID=1000
+      - PUID=1000
+      - DUMPER_TYPE=sqlite
+      - DUMPER_DATABASE=metadata.db  # Name of SQLite .db file
+      - DUMPER_KEEP=4
+      - DUMPER_SCHEDULE=0 4 * * 1 # 4am Mondays
+```
+
+
 ### Environment Variables
 | Variable                | Description                                                                                   | Default          |
 | ----------------------- | --------------------------------------------------------------------------------------------- | ---------------- |
 | PUID                    | The UserID of the user who will own the dumps.                                                |                  |
 | PGID                    | The GroupID of the user who will own the dumps.                                               |                  |
-| DUMPER_DATABASE         | The name of the database to dump. For SQLite, this is the filename (no path) to the .db file. |
+| DUMPER_DATABASE         | The name of the database to dump. For SQLite, this is the filename (no path) to the .db file. |                  |
 | DUMPER_HOST             | Database connection parameter; host to connect to. Not needed for SQLite.                     |                  |
 | DUMPER_PASSWORD         | Database connection parameter; password to connect with. Not needed for SQLite.               |                  |
 | DUMPER_PORT             | Database connection parameter; port to connect to. Not needed for SQLite.                     | `3306` or `5432` |
